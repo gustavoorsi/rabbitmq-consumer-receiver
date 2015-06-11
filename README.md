@@ -2,4 +2,4 @@
 sample spring boot with rabbitmq
 
 
-http://stackoverflow.com/questions/29592543/how-to-configure-and-receiveandconvert-json-payload-into-domain-object-in-sping
+http://stackoverflow.com/questions/30770725/spring-boot-rabbitmq-mappingjackson2messageconverter-custom-object-conversion
