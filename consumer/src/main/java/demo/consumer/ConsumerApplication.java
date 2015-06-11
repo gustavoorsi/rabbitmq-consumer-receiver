@@ -45,14 +45,14 @@ public class ConsumerApplication implements RabbitListenerConfigurer {
 
 @Service
 class Receiver {
-	@RabbitListener(queues = "queue")
+	@RabbitListener(queues = "queue.foo")
 	public void receiveMessage(Foo foo) {
-		System.out.println("Received <" + foo.name + ">");
+		System.out.println("Received Foo<" + foo.name + ">");
 	}
 
-	@RabbitListener(queues = "queue")
+	@RabbitListener(queues = "queue.bar")
 	public void receiveMessage(Bar bar) {
-		System.out.println("Received <" + bar.age + ">");
+		System.out.println("Received Bar<" + bar.age + ">");
 	}
 }
 

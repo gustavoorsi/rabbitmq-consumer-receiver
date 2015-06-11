@@ -16,62 +16,80 @@ import org.springframework.stereotype.Service;
 @SpringBootApplication
 public class ProducerApplication implements CommandLineRunner {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ProducerApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(ProducerApplication.class, args);
+	}
 
-    @Bean
-    Queue queue() {
-        return new Queue("queue", false);
-    }
+	@Bean
+	Queue queueFoo() {
+		return new Queue("queue.foo", false);
+	}
+	
+	@Bean
+	Queue queueBar() {
+		return new Queue("queue.bar", false);
+	}
 
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange("exchange");
-    }
+	@Bean
+	TopicExchange exchange() {
+		return new TopicExchange("exchange");
+	}
 
-    @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("queue");
-    }
+	@Bean
+	Binding bindingExchangeFoo(Queue queueFoo, TopicExchange exchange) {
+		return BindingBuilder.bind(queueFoo).to(exchange).with("queue.foo");
+	}
+	
+	@Bean
+	Binding bindingExchangeBar(Queue queueBar, TopicExchange exchange) {
+		return BindingBuilder.bind(queueBar).to(exchange).with("queue.bar");
+	}
 
-    @Bean
-    public MappingJackson2MessageConverter jackson2Converter() {
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        return converter;
-    }
+	@Bean
+	public MappingJackson2MessageConverter jackson2Converter() {
+		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+		return converter;
+	}
 
-    @Autowired
-    private Sender sender;
+	@Autowired
+	private Sender sender;
 
-    @Override
-    public void run(String... args) throws Exception {
-        sender.sendToRabbitmq(new Foo(), new Bar());
-    }
+	@Override
+	public void run(String... args) throws Exception {
+		sender.sendToRabbitmq(new Foo(), new Bar());
+	}
 }
 
 @Service
 class Sender {
 
-    @Autowired
-    private RabbitMessagingTemplate rabbitMessagingTemplate;
-    @Autowired
-    private MappingJackson2MessageConverter mappingJackson2MessageConverter;
+	@Autowired
+	private RabbitMessagingTemplate rabbitMessagingTemplate;
+	@Autowired
+	private MappingJackson2MessageConverter mappingJackson2MessageConverter;
 
-    public void sendToRabbitmq(final Foo foo, final Bar bar) {
+	public void sendToRabbitmq(final Foo foo, final Bar bar) {
 
-        this.rabbitMessagingTemplate.setMessageConverter(this.mappingJackson2MessageConverter);
+		this.rabbitMessagingTemplate.setMessageConverter(this.mappingJackson2MessageConverter);
 
-        this.rabbitMessagingTemplate.convertAndSend("exchange", "queue", foo);
-        this.rabbitMessagingTemplate.convertAndSend("exchange", "queue", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.foo", foo);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.foo", foo);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
+		this.rabbitMessagingTemplate.convertAndSend("exchange", "queue.bar", bar);
 
-    }
+	}
 }
 
 class Bar {
-    public int age = 33;
+	public int age = 33;
 }
 
 class Foo {
-    public String name = "gustavo";
+	public String name = "gustavo";
 }
